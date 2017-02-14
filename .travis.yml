@@ -1,0 +1,19 @@
+sudo: required
+
+env:
+  - CXX=g++-4.8 npm_config_mpg123_backend=dummy
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+      - libasound2-dev
+
+language: node_js
+
+node_js:
+  - "7"
+
+script:
+  - npm run test

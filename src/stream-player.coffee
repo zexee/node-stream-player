@@ -4,6 +4,10 @@ request = require('request')
 events = require('events')
 fs = require('fs')
 
+# http://stackoverflow.com/a/646643
+String::startsWith ?= (s) -> @slice(0, s.length) == s
+String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
+
 audioOptions = {
   channels: 2,
   bitDepth: 16,
@@ -66,14 +70,14 @@ class StreamPlayer extends events.EventEmitter
   add: (url, track) ->
     @queue.push(url)
     @trackInfo.push(track)
-    @emit('song added')
+    @emit('song added', url, track)
 
   # Returns the metadata for the song that is currently playing
   nowPlaying: () ->
     if @playing
       return {track: @currentSong, timestamp: @startTime}
     else
-      return new Error('No song is currently playing.')
+      throw new Error('No song is currently playing.')
 
   # Returns if there is a song currently playing
   isPlaying: () ->
@@ -85,16 +89,16 @@ class StreamPlayer extends events.EventEmitter
 
   # Get the audio stream
   getStream: (url, callback) ->
-    if 'http' not in url
-      stream = fs.createReadStream(url)
-      callback(stream)
-    else
+    if url.startsWith('http')
       request.get(url).on 'response', (res) ->
         if res.headers['content-type'] == 'audio/mpeg'
           callback(res)
         else
-          self.emit('invalid url')
+          self.emit('invalid url', url)
           loadNextSong()
+    else
+      stream = fs.createReadStream(url)
+      callback(stream)
 
 
   # Decode the stream and pipe it to our speakers
@@ -104,16 +108,16 @@ class StreamPlayer extends events.EventEmitter
     stream.pipe(self.decoder).once 'format', () ->
       self.decoder.pipe(self.speaker)
       self.startTime = Date.now();
-      self.emit('play start')
+      self.emit('play start', self.currentSong)
       self.speaker.once 'close', () ->
         loadNextSong()
 
 
 # Load the next song in the queue if there is one
 loadNextSong = () ->
+  self.emit('play end', self.currentSong)
   self.currentSong = null
   self.playing = false
-  self.emit('play end')
   self.play()
 
 

@@ -4,9 +4,11 @@
   "description": "Queue mp3 streams from the web and play them out of your speakers.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/all.js"
+    "test": "mocha test/all.js",
+    "build": "./node_modules/coffee-script/bin/coffee -o ./lib -c ./src/"
   },
   "devDependencies": {
+    "coffee-script": "^1.12.3",
     "mocha": ">=1.4.28"
   },
   "repository": {
@@ -27,7 +29,8 @@
   "homepage": "https://github.com/michael-gillett/node-stream-player",
   "dependencies": {
     "lame": "^1.2.2",
+    "node-gyp": "^3.5.0",
     "request": "^2.60.0",
-    "speaker": "^0.2.5"
+    "speaker": "0.3.0"
   }
 }

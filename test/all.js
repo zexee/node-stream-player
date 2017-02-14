@@ -9,7 +9,7 @@ describe('StreamPlayer', function() {
   describe('#play()', function () {
     it('should throw an error if attempting to play an empty queue', function () {
       var player = new StreamPlayer();
-      assert.throws(player.play(), 'The queue is empty.');
+      assert.throws(player.play, 'The queue is empty.');
     });
     it('should emit play start if a valid song url is added', function (done) {
       var player = new StreamPlayer();
@@ -22,7 +22,7 @@ describe('StreamPlayer', function() {
     it('should throw an error if we try to play() when a song is already playing', function (done) {
       var player = new StreamPlayer();
       player.on('play start', function() {
-        assert.throws(player.play(), Error);
+        assert.throws(player.play, Error);
         done();
       })
       player.add(validSong1);
@@ -44,18 +44,18 @@ describe('StreamPlayer', function() {
       var metadata = {title: "Some song", artist: "Some artist"};
       player.add(validSong1, metadata);
       player.on('play start', function() {
-        var time = Date.now();
-        var current = player.nowPlaying();
-        assert.deepEqual(current.track, metadata);
-        // Check that the timestamp is +/- 10 ms
-        assert(Math.abs(time - current.timestamp) < 10);
-        done();
+          var time = Date.now();
+          var current = player.nowPlaying();
+          assert.deepEqual(current.track, metadata);
+          // Check that the timestamp is +/- 10 ms
+          assert(Math.abs(time - current.timestamp) < 10);
+          done();
       });
       player.play();
     });
     it('should return an error if no song is currently playing', function () {
       var player = new StreamPlayer();
-      assert.throws(player.nowPlaying(), 'No song is currently playing.');
+      assert.throws(player.nowPlaying, 'No song is currently playing.');
     });
     it('should return undefined if no metadata is given', function (done) {
       var player = new StreamPlayer();
