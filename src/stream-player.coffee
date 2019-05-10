@@ -20,6 +20,7 @@ self = null
 class StreamPlayer extends events.EventEmitter
 
   constructor: () ->
+    super()
     events.EventEmitter.call(this)
     self = this
     @queue = []
@@ -44,6 +45,13 @@ class StreamPlayer extends events.EventEmitter
       return new Error('A song is already playing.')
     else
       return new Error('The queue is empty.')
+
+  # Stop playing
+  stop: () ->
+    @playing = false
+    @currentSong = null
+    @speaker.removeAllListeners 'close'
+    @speaker.end()
 
   # Pause the current playing audio stream
   pause: () ->
